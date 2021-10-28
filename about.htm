@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <title>Matthew Specker's Projects</title>
+    <meta name="Matthew Specker"
+    content="Matthew Specker, Specker, programming, projects">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <!--<base href="http://web.engr.oregonstate.edu/~speckerm/" target="_blank">--> 
+    <script src="js/about.js"></script>
+  </head>	
+  <body>
+
+    <header>
+      <h1>Food Log</h1>
+      <h2><script> document.write(new Date().toLocaleDateString()); </script></h2>
+    </header>
+	
+    <h2>Enter Body Info for Recommended Nutritional Needs</h2>
+    <form action="/action_page.php" method="post">
+      <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
+        <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
+          <label for="name">Name:</label>
+          <input type="text" id="name" name="name">
+        </fieldset>
+        <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
+          <label for="age">Age:</label>
+          <input type="number" id="age" name="age">
+        </fieldset>
+        <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
+          <label id="inline" for="height">Height:</label>
+          <input type="number" id="heightft" name="heightft">
+          <div id="inline">ft</div>
+          <input type="number" id="heightin" name="heightin">
+          <div id="inline">in</div>
+        </fieldset>
+        <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
+          <label id="inline" for="weight">Weight:</label>
+          <input type="number" id="weight" name="weight">
+          <div id="inline">lbs</div>
+        </fieldset>
+        <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
+          <p class="left">Gender:</p>
+          <label>
+            <input type="radio" name="webPres" value="great" />Male</label>
+          <br>
+          <label>
+            <input type="radio" name="webPres" value="good" />Female</label>
+          <br>
+        </fieldset>
+        <br>
+        <br>
+        <br>
+        <input type="submit" value="Submit" />
+      </fieldset>
+    </form>
+    <br>
+
+    <h2>Food Log</h2>
+    <table id="myTableData">
+      <tr>
+        <td>&nbsp;</td>
+        <td><b>Item #</b></td>
+        <td><b>Food</b></td>
+        <td><b>Quantity</b></td>
+        <td><b>Calories</b></td>
+      </tr>
+      <tr>
+        <td><input type="button" id="add" value="Add" onclick="addRow()"></td>
+        <td>&nbsp;</td>
+        <td><input type="text" id="food"></td>
+        <td><input type="number" id="qty"></td>
+        <td>&nbsp;</td>
+      </tr>
+    </table>
+    <br>
+
+    <h2>Nutrition Data</h2>
+    <table id="myNutritionData">
+      <tr>
+        <td><b>Nutrition</b></td>
+        <td><b>Consumed</b></td>
+        <td><b>Recommended</b></td>
+      </tr>
+      <tr>
+        <td>Calories</td>
+        <td id="calories"></td>
+        <td>2000</td>
+      </tr>
+      <tr>
+        <td>Protein</td>
+        <td id="protein"></td>
+        <td>50</td>
+      </tr>
+      <tr>
+        <td>Carbs</td>
+        <td id="carbs"></td>
+        <td>100</td>
+      </tr>
+      <tr>
+        <td>Fat</td>
+        <td id="fat"></td>
+        <td>20</td>
+      </tr>
+    </table>
+
+    <br>
+
+    <h3>Generate a recipe with the nutrition you're missing for the day.</h3>
+    <div class="center">
+      <button type="button" class="buttonrecipe">GENERATE RECIPE!</button>
+      <a href="" target="_blank" id="recipe">_____________________________________________________</a> 
+    </div>
+
+    <br>   
+    <hr>
+    <br>
+    <footer>
+      <p class="center">Last Updated: 10/27/2021</p>
+      <p class="center">Created by Matthew Specker</p>
+    </footer>
+
+  </body>
+</html>
+
