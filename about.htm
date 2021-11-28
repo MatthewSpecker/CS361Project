@@ -6,7 +6,7 @@
     <meta name="Matthew Specker"
     content="Matthew Specker, Specker, programming, projects">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="css/styles.css">
     <!--<base href="http://web.engr.oregonstate.edu/~speckerm/" target="_blank">--> 
     <script src="js/about.js"></script>
   </head>	
@@ -18,15 +18,15 @@
     </header>
 	
     <h2>Enter Body Info for Recommended Nutritional Needs</h2>
-    <form action="/action_page.php" method="post">
       <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
         <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
-          <label for="name">Name:</label>
+          <label id="inline" for="name">Name:</label>
           <input type="text" id="name" name="name">
         </fieldset>
         <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
           <label for="age">Age:</label>
           <input type="number" id="age" name="age">
+          <div id="inline">years</div>
         </fieldset>
         <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
           <label id="inline" for="height">Height:</label>
@@ -43,37 +43,75 @@
         <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
           <p class="left">Gender:</p>
           <label>
-            <input type="radio" name="webPres" value="great" />Male</label>
+            <input type="radio" name="gender" value="male" id="male">Male</label>
           <br>
           <label>
-            <input type="radio" name="webPres" value="good" />Female</label>
+            <input type="radio" name="gender" value="female" id="female">Female</label>
           <br>
         </fieldset>
+        <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
+          <p class="left">Activity:</p>
+          <label>
+            <input type="radio" name="activity" value="sedentary" id="sedentary">Sedentary</label>
+          <br>
+          <label>
+            <input type="radio" name="activity" value="lightly active" id="lightly active">Lightly Active</label>
+          <br>
+          <label>
+            <input type="radio" name="activity" value="moderately active" id="moderately active">Moderately Active</label>
+          <br>
+          <label>
+            <input type="radio" name="activity" value="very active" id="very active">Very Active</label>
+          <br>
+          <label>
+            <input type="radio" name="activity" value="extra active" id="extra active">Extra Active</label>
+          <br>
+        </fieldset>
+        <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
+          <label id="inline" for="percents">Percent of Calories from each Macronutrient:</label>
+          <input type="number" id="proteinPercent" name="proteinPercent">
+          <div id="inline">Protein %</div>
+          <input type="number" id="fatPercent" name="fatPercent">
+          <div id="inline">Fat %</div>
+          <input type="number" id="carbsPercent" name="carbsPercent">
+          <div id="inline">Carb %</div>
+        </fieldset>
+        <fieldset style="border:4px solid rgba(89, 60, 78, 1);">
+          <label for="caloriesChanged">Calorie Change:</label>
+          <input type="number" id="caloriesChanged" name="caloriesChanged">
+          <div id="inline">kcal</div>
+        </fieldset>
         <br>
-        <br>
-        <br>
-        <input type="submit" value="Submit" />
+        <h3 id="errorBody"></h3>
+        <h3 id="errorCalories"></h3>
+        <input type="button" class="button" id="submit" value="Submit" onclick="calcRecommended()">
       </fieldset>
-    </form>
     <br>
 
+    <h2 id="logName"></h2>
     <h2>Food Log</h2>
     <table id="myTableData">
       <tr>
         <td>&nbsp;</td>
         <td><b>Item #</b></td>
         <td><b>Food</b></td>
-        <td><b>Quantity</b></td>
+        <td colspan="3"><b>Quantity</b></td>
+        <td><b>Serving Size</b></td>
         <td><b>Calories</b></td>
       </tr>
       <tr>
-        <td><input type="button" id="add" value="Add" onclick="addRow()"></td>
+        <td><input type="button" class="button" id="add" value="Add" onclick="addRow()"></td>
         <td>&nbsp;</td>
         <td><input type="text" id="food"></td>
-        <td><input type="number" id="qty"></td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
         <td>&nbsp;</td>
       </tr>
     </table>
+    <br>
+
+    <h3 id="errorLog"></h3>
     <br>
 
     <h2>Nutrition Data</h2>
@@ -86,22 +124,172 @@
       <tr>
         <td>Calories</td>
         <td id="calories"></td>
-        <td>2000</td>
+        <td id="caloriesRecommended"></td>
       </tr>
       <tr>
         <td>Protein</td>
         <td id="protein"></td>
-        <td>50</td>
+        <td id="proteinRecommended"></td>
       </tr>
       <tr>
         <td>Carbs</td>
         <td id="carbs"></td>
-        <td>100</td>
+        <td id="carbsRecommended"></td>
+      </tr>
+      <tr>
+        <td>Fiber</td>
+        <td id="fiber"></td>
+        <td id="fiberRecommended"></td>
+      </tr>
+      <tr>
+        <td>Sugar</td>
+        <td id="sugar"></td>
+        <td>No Goal (g)</td>
       </tr>
       <tr>
         <td>Fat</td>
         <td id="fat"></td>
-        <td>20</td>
+        <td id="fatRecommended"></td>
+      </tr>
+      <tr>
+        <td>Trans Fats</td>
+        <td id="transFats"></td>
+        <td>No Goal (g)</td>
+      </tr>
+      <tr>
+        <td>Saturated Fats</td>
+        <td id="saturatedFats"></td>
+        <td>No Goal (g)</td>
+      </tr>
+      <tr>
+        <td>Monosaturated Fats</td>
+        <td id="monosaturatedFats"></td>
+        <td>No Goal (g)</td>
+      </tr>
+      <tr>
+        <td>Polyunsaturated Fats</td>
+        <td id="polyunsaturatedFats"></td>
+        <td>No Goal (g)</td>
+      </tr>
+      <tr>
+        <td>Cholesterol</td>
+        <td id="cholesterol"></td>
+        <td>No Goal (mg)</td>
+      </tr>
+      <tr>
+        <td>Alcohol</td>
+        <td id="alcohol"></td>
+        <td>No Goal (g)</td>
+      </tr>
+      <tr>
+        <td>Water</td>
+        <td id="water"></td>
+        <td id="waterRecommended"></td>
+      </tr>
+      <tr>
+        <td>Caffeine</td>
+        <td id="caffeine"></td>
+        <td>No Goal (mg)</td>
+      </tr>
+      <tr>
+        <td>Vitamin B1</td>
+        <td id="b1"></td>
+        <td id="b1Recommended">1.2 mg</td>
+      </tr>
+      <tr>
+        <td>Vitamin B2</td>
+        <td id="b2"></td>
+        <td id="b2Recommended">1.3 mg</td>
+      </tr>
+      <tr>
+        <td>Vitamin B3</td>
+        <td id="b3"></td>
+        <td id="b3Recommended">16 mg</td>
+      </tr>
+      <tr>
+        <td>Vitamin B6</td>
+        <td id="b6"></td>
+        <td id="b6Recommended">1.3 mg</td>
+      </tr>
+      <tr>
+        <td>Vitamin B12</td>
+        <td id="b12"></td>
+        <td id="b12Recommended">2.4 µg</td>
+      </tr>
+      <tr>
+        <td>Folate</td>
+        <td id="folate"></td>
+        <td id="folateRecommended">400 µg</td>
+      </tr>
+      <tr>
+        <td>Vitamin A</td>
+        <td id="vitaminA"></td>
+        <td id="vitaminARecommended">36,000 IU</td>
+      </tr>
+      <tr>
+        <td>Vitamin C</td>
+        <td id="vitaminC"></td>
+        <td id="vitaminCRecommended">90 mg</td>
+      </tr>
+      <tr>
+        <td>Vitamin D</td>
+        <td id="vitaminD"></td>
+        <td id="vitaminDRecommended">600 IU</td>
+      </tr>
+      <tr>
+        <td>Vitamin E</td>
+        <td id="vitaminE"></td>
+        <td id="vitaminERecommended">15 mg</td>
+      </tr>
+      <tr>
+        <td>Vitamin K</td>
+        <td id="vitaminK"></td>
+        <td id="vitaminKRecommended">120 µg</td>
+      </tr>
+      <tr>
+        <td>Calcium</td>
+        <td id="calcium"></td>
+        <td id="calciumRecommended">1000 mg</td>
+      </tr>
+      <tr>
+        <td>Copper</td>
+        <td id="copper"></td>
+        <td id="copperRecommended">0.9 mg</td>
+      </tr>
+      <tr>
+        <td>Iron</td>
+        <td id="iron"></td>
+        <td id="ironRecommended">8 mg</td>
+      </tr>
+      <tr>
+        <td>Magnesium</td>
+        <td id="magnesium"></td>
+        <td id="magnesiumRecommended">400 mg</td>
+      </tr>
+      <tr>
+        <td>Phosphorus</td>
+        <td id="phosphorus"></td>
+        <td id="phosphorusRecommended">700 mg</td>
+      </tr>
+      <tr>
+        <td>Potassium</td>
+        <td id="potassium"></td>
+        <td id="potassiumRecommended">3,400 mg</td>
+      </tr>
+      <tr>
+        <td>Selenium</td>
+        <td id="selenium"></td>
+        <td id="seleniumRecommended">55 µg</td>
+      </tr>
+      <tr>
+        <td>Sodium</td>
+        <td id="sodium"></td>
+        <td>1500 mg</td>
+      </tr>
+      <tr>
+        <td>Zinc</td>
+        <td id="zinc"></td>
+        <td id="zincRecommended">11 mg</td>
       </tr>
     </table>
 
@@ -109,15 +297,14 @@
 
     <h3>Generate a recipe with the nutrition you're missing for the day.</h3>
     <div class="center">
-      <button type="button" class="buttonrecipe">GENERATE RECIPE!</button>
-      <a href="" target="_blank" id="recipe">_____________________________________________________</a> 
+      <input class="button" type="button" value="Generate Recipe!" onclick="createIngredients()">
+      <h4 id="recipe"></h4> 
     </div>
-
     <br>   
     <hr>
     <br>
     <footer>
-      <p class="center">Last Updated: 10/27/2021</p>
+      <p class="center">Last Updated: 11/26/2021</p>
       <p class="center">Created by Matthew Specker</p>
     </footer>
 
