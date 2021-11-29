@@ -1,7 +1,9 @@
-var item = 1;
-var foods = [];
-var foodIndex = 0;
+var item = 1; //tracks a number to represent how many food entries are in the food log
+var foods = []; //stores all nutritional data and key info on each food in the food log
+var foodIndex = 0; //current index of foods[], represents how many foods in food log
 
+//submitting body info and nutrition goals triggers this function
+//the function calculates how many calories, protein, carbs, fat, water, and fiber you need
 function calcRecommended() {
   var error = document.getElementById("errorBody");
   error.innerHTML = "";
@@ -129,82 +131,105 @@ function calcRecommended() {
 
 }
 
+//If user submitted a value to reduce or increase caloric intake
 function changeCalories(calories) {
+  //clear out old error message
   var error = document.getElementById("errorCalories");
   error.innerHTML = "";
 
   var calorieChange = document.getElementById("caloriesChanged");
 
+  //ensure caloric intake change value is valid
   if (calorieChange.value > 1500 || calorieChange.value < -1500) {
     var error = document.getElementById("errorCalories");
     error.innerHTML = "The change in calories can't be less than -1500 or greater than 1500!";
   } else {
     var caloriesRecommended = document.getElementById("caloriesRecommended");
+    //update recommended calories on webpage
     caloriesRecommended.innerHTML = (+calorieChange.value + +calories).toFixed(0) + " kcal";
   }
 
   return (+calorieChange.value + +calories);
 }
 
+//When the user clicks 'Add' on the food log table to add a food entry
+//Adds a new row to food log table, finds given food in nutrition database, and updates nutrition eaten in food log and nutrition data tables
 async function addRow() {
           
+    //grab new entry and food log table
     var food = document.getElementById("food");
     var table = document.getElementById("myTableData");
 
+    //confirm a new food entry was actually given
     if (food.value == "") {
       var error = document.getElementById("errorLog");
       error.innerHTML = "You must enter a food!";
     } else {
       var error = document.getElementById("errorLog");
       error.innerHTML = "";
- 
+      
+      //add row to food log table for new food entry
       var rowCount = table.rows.length;
       var row = table.insertRow(rowCount);
 
+      //find new food entry in nutrition database
       await userAction(food.value, item);
 
-      row.insertCell(0).innerHTML= '<input type="button" class="button" value = "Delete" onClick="Javascript:deleteRow(this)">';
-      row.insertCell(1).innerHTML= item;
-      row.insertCell(2).innerHTML= food.value;
-      row.insertCell(3).innerHTML= foods[foodIndex].Qty;
-      row.insertCell(4).innerHTML= '<input type="button" class="button" value = "&#8593;" onClick="Javascript:upQty(this)">';
-      row.insertCell(5).innerHTML= '<input type="button" class="button" value = "&#8595;" onClick="Javascript:downQty(this)">';
-      row.insertCell(6).innerHTML= foods[foodIndex].Serving;
-      row.insertCell(7).innerHTML= foods[foodIndex].Calories;
+      //add cells into new row with relevant information
+      row.insertCell(0).innerHTML= '<input type="button" class="button" value = "Delete" onClick="Javascript:deleteRow(this)">'; //delete button
+      row.insertCell(1).innerHTML= item; //table entry number
+      row.insertCell(2).innerHTML= food.value; //new food entry name
+      row.insertCell(3).innerHTML= foods[foodIndex].Qty; //servings of food eaten
+      row.insertCell(4).innerHTML= '<input type="button" class="button" value = "&#8593;" onClick="Javascript:upQty(this)">'; //button to increase amount of food eaten
+      row.insertCell(5).innerHTML= '<input type="button" class="button" value = "&#8595;" onClick="Javascript:downQty(this)">'; //buton to decrease amount of food eaten
+      row.insertCell(6).innerHTML= foods[foodIndex].Serving; //serving size of food
+      row.insertCell(7).innerHTML= foods[foodIndex].Calories; //calories eaten with all servings of food combined
 
       updateNutrition();
 
+      //update food item number for next entry in food log
       item += 1;
+      //update index to track how many foods have been able to the foods array
       foodIndex += 1;
     }
 }
- 
+
+//called when the user wants to remove an entry from the food log
 function deleteRow(obj) {
-      
+  
+  //get index of row to be deleted
   var index = obj.parentNode.parentNode.rowIndex;
   var table = document.getElementById("myTableData");
-  table.deleteRow(index);
+  table.deleteRow(index); //deletes row
 
-  foods.splice(index-2, 1);
+  foods.splice(index-2, 1); //remove all data on delete food item
 
+  //adjust numbers that track the most recent food entry added
   foodIndex -= 1;
   item -= 1;
 
+  //correct any item number values in the food log table that need to be decreased now
   for (let i = index; i < (foodIndex + 2) ; i++) {
     foods[i - 2].Item -= 1;
 
     table.rows[i].cells[1].innerHTML = foods[i - 2].Item;
   }
 
+  //recalculate the consumed nutrition now that a food is no longer considered eaten
   updateNutrition();
 }
 
+//called when the user increases the food serving eaten by 1
 function upQty(obj) {
+
+  //get index of row in food log
   var index = obj.parentNode.parentNode.rowIndex;
   var x = document.getElementById("myTableData").rows[index].cells;
 
+  //ensure food quantity is not a negative number
   if (x[3].innerHTML >= 0) {
 
+    //update quantity in foods[]
     for (let i = 0; i < foods.length; i++) {
       if (foods[i].Item == x[1].innerHTML) {
         foods[i].Qty += 1;
@@ -213,19 +238,26 @@ function upQty(obj) {
       }
     }
 
+    //update quantity in food log and update calories consumed for that item
     x[3].innerHTML = foods[indexFood].Qty;
     x[7].innerHTML = foods[indexFood].Calories * foods[indexFood].Qty; 
 
+    //recalculate consumed nutrition now that more food has been eaten
     updateNutrition();
   }
 }
 
+//called when the user decreases the food serving eaten by 1
 function downQty(obj) {
+
+  //get index of row in food log
   var index = obj.parentNode.parentNode.rowIndex;
   var x = document.getElementById("myTableData").rows[index].cells;
 
+  //ensure food quantity is at least 1, so a negative number is avoided
   if (x[3].innerHTML > 0) {
 
+    //update quantity in foods[]
     for (let i = 0; i < foods.length; i++) {
       if (foods[i].Item == x[1].innerHTML) {
         foods[i].Qty -= 1;
@@ -234,26 +266,36 @@ function downQty(obj) {
       }
     }
 
+    //update quantity in food log and update calories consumed for that item
     x[3].innerHTML = foods[indexFood].Qty;
     x[7].innerHTML = foods[indexFood].Calories * foods[indexFood].Qty; 
 
+    //recalculate consumed nutrition now that more food has been eaten
     updateNutrition();
   }
 }
 
+//calls a food nutrition database API with new food entry given by user
+//finds all nutrition given by food and puts data into foods[]
 async function userAction (foodname, itemNum) {
 
+  //call food database API
   var str1 = "https://api.nal.usda.gov/fdc/v1/foods/search?api_key=quUbj48gALTdXJ1SyIdw8e7RTALfRyIUNTmhqy79&query=";
   res = str1.concat(foodname);
   const response = await fetch(res);
   const myJson = await response.json(); //extract JSON from the http response
+
+  //find serving size information
   var servingUnit = myJson.foods[0].servingSizeUnit;
   var servingSize = myJson.foods[0].servingSize;
   var serving = servingSize + " " + servingUnit;
+
+  //if there isn't a serving size available for food item, change serving size to 'N/A'
   if (serving == "undefined undefined") {
     serving = "N/A";
   }
 
+  //initialize all nutrition categories to 0. if a food doesn't have some nutrition category, we want the value to be 0
   var protein = 0;
   var fat = 0;
   var carbs = 0;
@@ -289,6 +331,8 @@ async function userAction (foodname, itemNum) {
   var polyunsaturatedFats = 0;
   var sugar = 0;
   
+  //the food database API has nutrient IDs for the different nutrient categories
+  //this loop grabs all nutrient categories by matching data to nutrient IDs
   for (let i = 0; i < myJson.foods[0].foodNutrients.length; i++) {
     if (myJson.foods[0].foodNutrients[i].nutrientId == 1003) {
       protein = myJson.foods[0].foodNutrients[i].value;
@@ -363,6 +407,7 @@ async function userAction (foodname, itemNum) {
     }
   } 
 
+  //push all nutritional data to foods[] for later use
   foods.push({
     Item: itemNum,
     Food: foodname,
@@ -406,8 +451,11 @@ async function userAction (foodname, itemNum) {
  
 }
 
+//takes in all data in foods[] and calculates the total amount of nutrition eaten
+//results are placed in nutrition data table on web page
 function updateNutrition() {
 
+  //initialize all nutrient categories to 0
   var protein = 0;
   var fat = 0;
   var carbs = 0;
@@ -443,6 +491,7 @@ function updateNutrition() {
   var polyunsaturatedFats = 0;
   var sugar = 0;
 
+  //loop through all food item in foods[] and add the nutritional data of each food item with serving quantity factored in
   for (let i = 0; i < foods.length; i++) {
     protein += foods[i].Protein * foods[i].Qty;
     fat += foods[i].Fat * foods[i].Qty;
@@ -480,6 +529,9 @@ function updateNutrition() {
     sugar += foods[i].Sugar * foods[i].Qty;
   }
 
+  //update results into nutrition data table on web page
+  //'toFixed(2)' limits numbers to 2 decimals
+  //'toString()...' is a regex expression that adds commas for the thousands place and so on
   document.getElementById("protein").innerHTML = protein.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " g";
   document.getElementById("fat").innerHTML = fat.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " g";
   document.getElementById("carbs").innerHTML = carbs.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " g";
@@ -516,6 +568,10 @@ function updateNutrition() {
   document.getElementById("sugar").innerHTML = sugar.toFixed(2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " g";
 }
 
+//activated when user asks for a recipe
+//calculates the percentage of missing nutrition for user's day
+//for the 4 nutrient categories with the biggest missing percentage of nutrition, an ingredient associated with lot of that missing nutrient will be recommended
+//generates a downloadable file of recipes for user
 async function createIngredients() {
   var max = [[0, ""], [0, ""], [0, ""], [0, ""]];
 
@@ -642,6 +698,7 @@ async function createIngredients() {
 
   comparePercents(selenium.value, "peanut butter", max);
 
+  //foodList[] stores the 4 ingredients to find recipes with
   var foodList = [];
 
   foodList.push({
@@ -651,12 +708,13 @@ async function createIngredients() {
     food4: max[3][1]
   });
 
-  //console.log(foodList);
-
-  await getRecipe(foodList);
+  //get downloadable file with recipes with the 4 ingredients
+  await getRecipe();
 }
 
+//updates an ordered array if a newly given number is bigger than the 4 numbers stored in the ordered array
 function comparePercents(percent, name, maxNumList) {
+
   if (percent > maxNumList[0][0]) {
     maxNumList.unshift([percent, name]);
     maxNumList.pop();
@@ -670,20 +728,57 @@ function comparePercents(percent, name, maxNumList) {
     maxNumList.splice(3, 0, [percent, name]);
     maxNumList.pop();
   }
-
-  //console.log(maxNumList);
 }
 
 async function getRecipe (ingredients) {
+
+  //var str1 = "http://localhost:5000/ingredients/";
   var str1 = "https://hungies.herokuapp.com/ingredients/";
-  res = str1.concat(ingredients[0].food1 + "/");
-  res = res.concat(ingredients[0].food2 + "/");
-  res = res.concat(ingredients[0].food3 + "/");
-  res = res.concat(ingredients[0].food4);
-  const response = await fetch(res);
-  const myJson = await response.json(); //extract JSON from the http response
-  console.log(myJson)
+  req = str1.concat(ingredients[0].food1 + "/");
+  req = res.concat(ingredients[0].food2 + "/");
+  req = res.concat(ingredients[0].food3 + "/");
+  req = res.concat(ingredients[0].food4);
+  //req = str1.concat('"corn"' + "/");
+  //req = req.concat('"ham"' + "/");
+  //req = req.concat('"salt"' + "/");
+  //req = req.concat('"milk"');
+  //const myJson = await response.json(); //extract JSON from the http response
   //var recipe = myJson.recipe for: corn.recipe_link;
 
-  document.getElementById("recipe").innerHTML = recipe;
+  //document.getElementById("recipe").innerHTML = recipe;
+
+  fetchDown(req, 'recipes.json');
+}
+
+//takes in the request url with our 4 ingredients and calls a teammate's microservice
+//a json file with recipes with be downloaded for user to look at
+function fetchDown (url, saveas) {
+  // (A) FETCH FILE
+  fetch(url)
+ 
+  // (B) RETURN AS BLOB
+  .then((result) => {
+    if (result.status != 200) { throw new Error("Bad server response"); }
+    return result.blob();
+  })
+ 
+  // (C) BLOB DATA
+  .then((data) => {
+    // (C1) FILE DATA IS "READY FOR USE"
+    console.log(data);
+ 
+    // (C2) TO "FORCE DOWNLOAD"
+    var url = window.URL.createObjectURL(data),
+    anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = saveas;
+    anchor.click();
+ 
+    // (C3) CLEAN UP
+    window.URL.revokeObjectURL(url);
+    document.removeChild(anchor);
+  })
+ 
+  // (D) HANDLE ERRORS - OPTIONAL
+  .catch((error) => { console.log(error); });
 }
