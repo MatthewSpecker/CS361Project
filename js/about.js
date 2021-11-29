@@ -5,6 +5,8 @@ var foodIndex = 0; //current index of foods[], represents how many foods in food
 //submitting body info and nutrition goals triggers this function
 //the function calculates how many calories, protein, carbs, fat, water, and fiber you need
 function calcRecommended() {
+
+  //check for valid input for all user submitted info
   var error = document.getElementById("errorBody");
   error.innerHTML = "";
 
@@ -49,11 +51,14 @@ function calcRecommended() {
     error.innerHTML = "You must enter in a proper weight!";
   }
 
+  //initialize values we need to calculate
   var bmr = 0;
   var calorieNeed = 0;
   var fiberNeed = 0;
   var waterNeed = 0;
 
+  //using gender, age, weight, and height, determine BMR and fiber needs
+  //also ensure a gender was selected
   if (document.getElementById("male").checked) {
     bmr = 66 + (6.3 * weight.value) + (12.9 * ((heightFt.value * 12) + +heightIn.value)) - (6.8 * age.value);
     if (age.value > 50) {
@@ -73,6 +78,8 @@ function calcRecommended() {
     error.innerHTML = "You must select a gender for recommended nutritional needs!";
   }
 
+  //ensure an activity level was selected
+  //determine caloric needs of user using activity level and BMR
   if (document.getElementById("sedentary").checked) {
     calorieNeed = bmr * 1.2;
   } else if(document.getElementById("lightly active").checked) {
@@ -88,6 +95,7 @@ function calcRecommended() {
     error.innerHTML = "You must select an activity level for recommended nutritional needs!";
   }
 
+  //using age and weight, determine water needs of user
   if (age.value > 55) {
     waterNeed = weight.value / 2.2 * 30 / 28.3 / 8;
   } else if (age.value > 30) {
@@ -96,18 +104,24 @@ function calcRecommended() {
     waterNeed = weight.value / 2.2 * 40 / 28.3 / 8;
   }
 
+  //update recommended caloric, water, and fiber intake on web page
   var caloriesRecommended = document.getElementById("caloriesRecommended");
   caloriesRecommended.innerHTML = calorieNeed.toFixed(0) + " kcal";
   fiberRecommended.innerHTML = fiberNeed + " g";
   waterRecommended.innerHTML = waterNeed.toFixed(2) + " cups";
 
+  //if user wanted to add a deficit or increase to recommended caloric intake, add it in to recommended calories
   calorieNeed = changeCalories(calorieNeed);
 
+  //take in percent of calories user wants to get from each macro nutrient
   var proteinPercent = document.getElementById("proteinPercent");
   var fatPercent = document.getElementById("fatPercent");
   var carbsPercent = document.getElementById("carbsPercent");
 
+  //ensure the 3 macronutrient percents add up to 100. send an error if they do not
   if (+proteinPercent.value == 0 && +fatPercent.value == 0 && +carbsPercent.value == 0) {
+    //if percentages weren't entered by user, user defaults
+    //calculate recommended amount of protein, carbs, and fat for user and update on web page
     var proteinRecommended = document.getElementById("proteinRecommended");
     proteinRecommended.innerHTML = ((.2 * calorieNeed) / 4).toFixed(0) + " g";
     var fatRecommended = document.getElementById("fatRecommended");
@@ -121,6 +135,7 @@ function calcRecommended() {
     var error = document.getElementById("errorBody");
     error.innerHTML = "Your macronutrient percents should add up to 100! Your total is too high!";
   } else if ((+proteinPercent.value + +fatPercent.value + +carbsPercent.value) == 100) {
+    //if percentages add up to 100, calculate recommended amount of protein, carbs, and fat for user and update on web page
     var proteinRecommended = document.getElementById("proteinRecommended");
     proteinRecommended.innerHTML = ((proteinPercent.value / 100 * calorieNeed) / 4).toFixed(0) + " g";
     var fatRecommended = document.getElementById("fatRecommended");
@@ -185,6 +200,7 @@ async function addRow() {
       row.insertCell(6).innerHTML= foods[foodIndex].Serving; //serving size of food
       row.insertCell(7).innerHTML= foods[foodIndex].Calories; //calories eaten with all servings of food combined
 
+      //calculate consumed nutrition now that more food has been eaten
       updateNutrition();
 
       //update food item number for next entry in food log
@@ -730,8 +746,10 @@ function comparePercents(percent, name, maxNumList) {
   }
 }
 
+//calls teammates microservice to generate a recipe download
 async function getRecipe (ingredients) {
 
+  //create url with 4 ingredients to send to microservice
   //var str1 = "http://localhost:5000/ingredients/";
   var str1 = "https://hungies.herokuapp.com/ingredients/";
   req = str1.concat(ingredients[0].food1 + "/");
@@ -742,11 +760,8 @@ async function getRecipe (ingredients) {
   //req = req.concat('"ham"' + "/");
   //req = req.concat('"salt"' + "/");
   //req = req.concat('"milk"');
-  //const myJson = await response.json(); //extract JSON from the http response
-  //var recipe = myJson.recipe for: corn.recipe_link;
 
-  //document.getElementById("recipe").innerHTML = recipe;
-
+  //send request to teammate's microservice and get a downloadable file of recipes
   fetchDown(req, 'recipes.json');
 }
 
