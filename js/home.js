@@ -1,6 +1,8 @@
 var item = 1; //tracks a number to represent how many food entries are in the food log
 var foods = []; //stores all nutritional data and key info on each food in the food log
 var foodIndex = 0; //current index of foods[], represents how many foods in food log
+var foodEaten = [0]; //stores amount of each nutrient eaten thus far
+var foodRecommended = [0]; //stores amount of each nutrient recommended to eat per day
 
 //submitting body info and nutrition goals triggers this function
 //the function calculates how many calories, protein, carbs, fat, water, and fiber you need
@@ -143,6 +145,32 @@ function calcRecommended() {
     var carbsRecommended = document.getElementById("carbsRecommended");
     carbsRecommended.innerHTML = ((carbsPercent.value / 100 * calorieNeed) / 4).toFixed(0) + " g";
   }
+
+  foodRecommended.pop();
+
+  //store amount of recommended daily nutritient into index 0 of global array: foodRecommended
+  foodRecommended.push({
+    fiber: fiberNeed,
+    calcium: 1000,
+    iron: 8,
+    magnesium: 400,
+    phosphorus: 700,
+    potassium: 3400,
+    zinc: 11,
+    copper: 0.9,
+    selenium: 55,
+    vitaminA: 36000,
+    vitaminE: 15,
+    vitaminD: 600,
+    vitaminC: 90,
+    b1: 1.2,
+    b2: 1.3,
+    b3: 16,
+    b6: 1.3,
+    folate: 400,
+    b12: 2.4,
+    vitaminK: 120
+  });
 
 }
 
@@ -545,6 +573,32 @@ function updateNutrition() {
     sugar += foods[i].Sugar * foods[i].Qty;
   }
 
+  foodEaten.pop();
+
+  //store amount of food eaten of each nutritient into index 0 of global array: foodEaten
+  foodEaten.push({
+    fiber: fiber,
+    calcium: calcium,
+    iron: iron,
+    magnesium: magnesium,
+    phosphorus: phosphorus,
+    potassium: potassium,
+    zinc: zinc,
+    copper: copper,
+    selenium: selenium,
+    vitaminA: vitaminA,
+    vitaminE: vitaminE,
+    vitaminD: vitaminD,
+    vitaminC: vitaminC,
+    b1: b1,
+    b2: b2,
+    b3: b3,
+    b6: b6,
+    folate: folate,
+    b12: b12,
+    vitaminK: vitaminK
+  });
+
   //update results into nutrition data table on web page
   //'toFixed(2)' limits numbers to 2 decimals
   //'toString()...' is a regex expression that adds commas for the thousands place and so on
@@ -589,133 +643,91 @@ function updateNutrition() {
 //for the 4 nutrient categories with the biggest missing percentage of nutrition, an ingredient associated with lot of that missing nutrient will be recommended
 //generates a downloadable file of recipes for user
 async function createIngredients() {
-  var max = [[0, ""], [0, ""], [0, ""], [0, ""]];
+  var max = [[0, "unsweetened plain soy milk"], [0, "red beans"], [0, "oats"], [0, "carrot"]];
 
-  var calciumRecommended = document.getElementById("calciumRecommended");
-  var calcium = document.getElementById("calcium");
-  console.log(calciumRecommended.name);
-  console.log(calcium.name);
-  var calciumPercent = +calcium.value / +calciumRecommended.value;
-  console.log(calciumPercent);
+  var calciumPercent = foodEaten[0].calcium / foodRecommended[0].calcium;
 
   comparePercents(calciumPercent, "unsweetened plain soy milk", max);
 
-  var ironRecommended = document.getElementById("ironRecommended");
-  var iron = document.getElementById("iron");
-  iron.value = iron.value / ironRecommended.value;
+  var ironPercent = foodEaten[0].iron / foodRecommended[0].iron;
 
-  comparePercents(iron.value, "red beans", max);
+  comparePercents(ironPercent, "red beans", max);
 
-  var fiberRecommended = document.getElementById("fiberRecommended");
-  var fiber = document.getElementById("fiber");
-  fiber.value = fiber.value / fiberRecommended.value;
+  var fiberPercent = foodEaten[0].fiber / foodRecommended[0].fiber;
 
-  comparePercents(fiber.value, "oats", max);
+  comparePercents(fiberPercent, "oats", max);
 
-  var vitaminARecommended = document.getElementById("vitaminARecommended");
-  var vitaminA = document.getElementById("vitaminA");
-  vitaminA.value = vitaminA.value / vitaminARecommended.value;
+  var vitaminAPercent = foodEaten[0].vitaminA / foodRecommended[0].vitaminA;
 
-  comparePercents(vitaminA.value, "carrot", max);
+  comparePercents(vitaminAPercent, "carrot", max);
 
-  var vitaminCRecommended = document.getElementById("vitaminCRecommended");
-  var vitaminC = document.getElementById("vitaminC");
-  vitaminC.value = vitaminC.value / vitaminCRecommended.value;
+  var vitaminCPercent = foodEaten[0].vitaminC / foodRecommended[0].vitaminC;
 
-  comparePercents(vitaminC.value, "broccoli florets", max);
+  comparePercents(vitaminCPercent, "broccoli florets", max);
 
-  var vitaminDRecommended = document.getElementById("vitaminDRecommended");
-  var vitaminD = document.getElementById("vitaminD");
-  vitaminD.value = vitaminD.value / vitaminDRecommended.value;
+  var vitaminDPercent = foodEaten[0].vitaminD / foodRecommended[0].vitaminD;
 
-  comparePercents(vitaminD.value, "unsweetened plain soy milk", max);
+  comparePercents(vitaminDPercent, "unsweetened plain soy milk", max);
 
-  var b12Recommended = document.getElementById("b12Recommended");
-  var b12 = document.getElementById("b12");
-  b12.value = b12.value / b12Recommended.value;
+  var b12Percent = foodEaten[0].b12 / foodRecommended[0].b12Recommended;
 
-  comparePercents(b12.value, "unsweetened plain soy milk", max);
+  comparePercents(b12Percent, "unsweetened plain soy milk", max);
 
-  var magnesiumRecommended = document.getElementById("magnesiumRecommended");
-  var magnesium = document.getElementById("magnesium");
-  magnesium.value = magnesium.value / magnesiumRecommended.value;
+  var magnesiumPercent = foodEaten[0].magnesium / foodRecommended[0].magnesium;
 
-  comparePercents(magnesium.value, "brown lentils", max);
+  comparePercents(magnesiumPercent, "brown lentils", max);
 
-  var potassiumRecommended = document.getElementById("potassiumRecommended");
-  var potassium = document.getElementById("potassium");
-  potassium.value = potassium.value / potassiumRecommended.value;
+  var potassiumPercent = foodEaten[0].potassium / foodRecommended[0].potassium;
 
-  comparePercents(potassium.value, "russet potato", max);
+  comparePercents(potassiumPercent, "russet potato", max);
 
-  var vitaminKRecommended = document.getElementById("vitaminKRecommended");
-  var vitaminK = document.getElementById("vitaminK");
-  vitaminK.value = vitaminK.value / vitaminKRecommended.value;
+  var vitaminKPercent = foodEaten[0].vitaminK / foodRecommended[0].vitaminK;
 
-  comparePercents(vitaminK.value, "spinach", max);
+  comparePercents(vitaminKPercent, "spinach", max);
 
-  var vitaminERecommended = document.getElementById("vitaminERecommended");
-  var vitaminE = document.getElementById("vitaminE");
-  vitaminE.value = vitaminE.value / vitaminERecommended.value;
+  var vitaminEPercent = foodEaten[0].vitaminE / foodRecommended[0].vitaminE;
 
-  comparePercents(vitaminE.value, "almonds", max);
+  comparePercents(vitaminEPercent, "almonds", max);
 
-  var phosphorusRecommended = document.getElementById("phosphorusRecommended");
-  var phosphorus = document.getElementById("phosphorus");
-  phosphorus.value = phosphorus.value / phosphorusRecommended.value;
+  var phosphorusPercent = foodEaten[0].phosphorus / foodRecommended[0].phosphorus;
 
-  comparePercents(phosphorus.value, "unsweetened plain soy milk", max);
+  comparePercents(phosphorusPercent, "unsweetened plain soy milk", max);
 
-  var folateRecommended = document.getElementById("folateRecommended");
-  var folate = document.getElementById("folate");
-  folate.value = folate.value / folateRecommended.value;
+  var folatePercent = foodEaten[0].folate / foodRecommended[0].folate;
 
-  comparePercents(folate.value, "navy beans", max);
+  comparePercents(folatePercent, "navy beans", max);
 
-  var b1Recommended = document.getElementById("b1Recommended");
-  var b1 = document.getElementById("b1");
-  b1.value = b1.value / b1Recommended.value;
+  var b1Percent = foodEaten[0].b1 / foodRecommended[0].b1;
 
-  comparePercents(b1.value, "quinoa", max);
+  comparePercents(b1Percent, "quinoa", max);
 
-  var b2Recommended = document.getElementById("b2Recommended");
-  var b2 = document.getElementById("b2");
-  b2.value = b2.value / b2Recommended.value;
+  var b2Percent = foodEaten[0].b2 / foodRecommended[0].b2;
 
-  comparePercents(b2.value, "unsweetened plain soy milk", max);
+  comparePercents(b2Percent, "unsweetened plain soy milk", max);
 
-  var b3Recommended = document.getElementById("b3Recommended");
-  var b3 = document.getElementById("b3");
-  b3.value = b3.value / b3Recommended.value;
+  var b3Percent = foodEaten[0].b3 / foodRecommended[0].b3;
 
-  comparePercents(b3.value, "mushroom ravioli", max);
+  comparePercents(b3Percent, "mushroom ravioli", max);
 
-  var b6Recommended = document.getElementById("b6Recommended");
-  var b6 = document.getElementById("b6");
-  b6.value = b6.value / b6Recommended.value;
+  var b6Percent = foodEaten[0].b6 / foodRecommended[0].b6;
 
-  comparePercents(b6.value, "flax seed", max);
+  comparePercents(b6Percent, "flax seed", max);
 
-  var zincRecommended = document.getElementById("zincRecommended");
-  var zinc = document.getElementById("zinc");
-  zinc.value = zinc.value / zincRecommended.value;
+  var zincPercent = foodEaten[0].zinc / foodRecommended[0].zinc;
 
-  comparePercents(zinc.value, "pine nuts", max);
+  comparePercents(zincPercent, "pine nuts", max);
 
-  var copperRecommended = document.getElementById("copperRecommended");
-  var copper = document.getElementById("copper");
-  copper.value = copper.value / copperRecommended.value;
+  var copperPercent = foodEaten[0].copper / foodRecommended[0].copper;
 
-  comparePercents(copper.value, "russet potato", max);
+  comparePercents(copperPercent, "russet potato", max);
 
-  var seleniumRecommended = document.getElementById("seleniumRecommended");
-  var selenium = document.getElementById("selenium");
-  selenium.value = selenium.value / seleniumRecommended.value;
+  var seleniumPercent = foodEaten[0].selenium / foodRecommended[0].selenium;
 
-  comparePercents(selenium.value, "peanut butter", max);
+  comparePercents(seleniumPercent, "peanut butter", max);
 
   //foodList[] stores the 4 ingredients to find recipes with
   var foodList = [];
+
 
   foodList.push({
     food1: max[0][1],
@@ -725,7 +737,7 @@ async function createIngredients() {
   });
 
   //get downloadable file with recipes with the 4 ingredients
-  await getRecipe();
+  await getRecipe(foodList);
 }
 
 //updates an ordered array if a newly given number is bigger than the 4 numbers stored in the ordered array
@@ -750,16 +762,11 @@ function comparePercents(percent, name, maxNumList) {
 async function getRecipe (ingredients) {
 
   //create url with 4 ingredients to send to microservice
-  //var str1 = "http://localhost:5000/ingredients/";
   var str1 = "https://hungies.herokuapp.com/ingredients/";
-  req = str1.concat(ingredients[0].food1 + "/");
-  req = res.concat(ingredients[0].food2 + "/");
-  req = res.concat(ingredients[0].food3 + "/");
-  req = res.concat(ingredients[0].food4);
-  //req = str1.concat('"corn"' + "/");
-  //req = req.concat('"ham"' + "/");
-  //req = req.concat('"salt"' + "/");
-  //req = req.concat('"milk"');
+  req = str1.concat('"' + ingredients[0].food1 + '"/"');
+  req = req.concat(ingredients[0].food2 + '"/"');
+  req = req.concat(ingredients[0].food3 + '"/"');
+  req = req.concat(ingredients[0].food4 + '"');
 
   //send request to teammate's microservice and get a downloadable file of recipes
   fetchDown(req, 'recipes.json');
@@ -791,9 +798,5 @@ function fetchDown (url, saveas) {
  
     // (C3) CLEAN UP
     window.URL.revokeObjectURL(url);
-    document.removeChild(anchor);
   })
- 
-  // (D) HANDLE ERRORS - OPTIONAL
-  .catch((error) => { console.log(error); });
 }
